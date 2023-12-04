@@ -1,0 +1,263 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+
+
+
+# Melhoramentos no histórico da linha
+# de comando do shell.
+# Agradecimentos, como sempre, ao Meleu!
+# --> explicação destas opções em:
+# https://meleu.sh/bash-history
+export HISTCONTROL='ignoreboth:erasedups'
+export HISTIGNORE='history:pwd:htop:clear:q:wq'
+export HISTTIMEFORMAT="%F %T "
+export PROMPT_COMMAND='history -a'
+export HISTSIZE=1000
+export HISTFILESIZE=2000
+shopt -s histappend
+shopt -s cmdhist
+
+
+
+
+# Verifica o tamanho da janela a cada comando e, se necessário,
+# atualiza a quantidade de linhas e colunas disponíveis para exibição.
+# Obviamente, este comando só tem utilidade quando utilizando um emulador
+# de terminal. Por isso é precedido pelo teste da variável de ambient
+# "DISPLAY" a fim de verificar se a sessão está sendo rodada em modo
+# gráfico ou no modo console.
+[[ $DISPLAY ]] && shopt -s checkwinsize
+
+
+
+
+# Modificação da variável PATH necessária para o compilador RUST
+# . "$HOME/.cargo/env"
+
+# Idem acima, mas para a linguagem "GO"
+export PATH="$PATH:$(go env GOBIN):$(go env GOPATH)/bin"
+
+# Ajuste na variável PATH necessário à linguagem RUBY
+#export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
+#export PATH="$PATH:$GEM_HOME/bin"
+
+# Inclui o diretório ~/.gambiarra/scripts na variável de sistema PATH.
+case ":${PATH}:" in
+    *:"$HOME/.gambiarra/scripts":*)
+        ;;
+    *)
+        export PATH="$HOME/.gambiarra/scripts:$PATH"
+        ;;
+esac
+
+
+
+
+# Inclui o arquivo de configurações para as minhas gambiarras...
+#. ~/.gambiarra/config/gambiarra.rc
+
+
+
+
+# Inclui o arquivo contendo todos os meus aliases
+if [ -e ~/.aliases ] ;
+then
+    . ~/.aliases
+fi
+
+
+
+
+# Define o prompt para o modo texto --> Obrigado ao Meleu,
+# de novo! Veja o arquivo "bashrc" dele em:
+# https://github.com/meleu/.dotfiles/blob/master/.bashrc
+# A função abaixo exibe a versão ("branch") atual quando
+# em um diretório que pertença a um repositório git.
+gitBranch() {
+    ret="$?"
+    branch="$(git branch --show-current 2> /dev/null)" \
+        && echo -ne "\033[32m  ${branch}\033[00m " ;
+    return "${ret}" ;
+}
+PS1=
+PS1+='\u@\h [\w] '
+PS1+='$(gitBranch || echo "\[\033[01;31m\]")'
+PS1+='\$ '
+PS1+='\[\033[00m\]'
+
+# Define o prompt será exibido quando extendendo
+# um comando por várias linhas através do uso da
+# contrabarra ("\")
+PS2='[cont.] --> '
+
+
+
+
+# Utiliza o script "lesspipe.sh" para melhorar a saída do comando "less".
+# Para instalar o "lesspipe.sh", utilize sudo pacman -S lesspipe
+[ -x /usr/bin/lesspipe.sh ] && eval "$(SHELL=/bin/sh lesspipe.sh)"
+
+
+
+
+# Definições essenciais...
+export EDITOR=nvim
+export VISUAL=nvim
+export TERMINAL=alacritty
+export TERM=xterm-256color
+export PAGER=less
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_RUNTIME_DIR="/run/user/$UID"
+export XDG_DATA_DIRS="/usr/local/share:/usr/share"
+export XDG_CONFIG_DIRS="/etc/xdg"
+export XDG_DESKTOP_DIR="$HOME/desktop"
+export XDG_DOWNLOAD_DIR="$HOME/downloads"
+export XDG_TEMPLATES_DIR="$HOME/templates"
+export XDG_PUBLICSHARE_DIR="$HOME/github"
+export XDG_DOCUMENTS_DIR="$HOME/documents"
+export XDG_MUSIC_DIR="$HOME/music"
+export XDG_PICTURES_DIR="$HOME/pictures"
+export XDG_VIDEOS_DIR="$HOME/videos"
+
+
+
+
+# o gerenciador de arquivos RANGER deve utilizar
+# apenas as configurações definidas pelo usuário
+export RANGER_LOAD_DEFAULT_RC=FALSE
+
+# A função abaixo impede que o RANGER abra outra instância
+# de si mesmo quando o usuário acessa o Shell a partir do
+# próprio aplicativo.
+ranger() {
+    if [ -z "$RANGER_LEVEL" ]; then
+        /usr/bin/ranger "$@" ;
+    else
+        exit ;
+    fi
+}
+
+# A função e o alias a seguir permitem iniciar o RANGER
+# como "r". Ao fechar o RANGER, o usuário será direcionado
+# ao diretório em que estava ao fechar o aplicativo, desde
+# que o mesmo seja encerrado pressionando a tecla "x" / "X".
+function ranger_func {
+    ranger "$*" ;
+    local quit_cd_wd_file="$HOME/.ranger_quit_cd_wd" ;
+    if [ -s "$quit_cd_wd_file" ] ;
+    then
+        cd "$(cat $quit_cd_wd_file)" ;
+        true > "$quit_cd_wd_file" ;
+    fi
+}
+alias r='ranger_func'
+
+
+
+
+# Definições de cores para os comandos "ls" e "lsd"
+eval $(dircolors ~/.dircolors)
+
+# Cores para o comando "less", também!
+export LESS='-R --use-color -Dd+r$Du+b$'
+
+# Cores para avisos do compilador GCC, usado para compilar código-fonte
+# criado utilizando as linguagens C e C++
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+
+
+
+# Inicialização do MPD
+#pgrep mpd > /dev/null || mpd
+
+
+
+
+# Altera fonte do console e provê algumas outras modificações
+# para quando não estiver operando em modo gráfico...
+if [ "$TERM" == "linux" ] ;
+then
+    # Seleciona a fonte para o modo console: "Terminus". Para
+    # instalar use pacman -S terminus-font
+    setfont ter-122n
+    # Seleciona paleta de cores para o terminal no modo console
+    #~/.dotfiles/themes/cowboy-bebop_-_console.sh
+fi
+
+
+
+
+# Imprime o lembrete do coelhinho
+#bunnie ~/lembrete.txt
+
+
+
+
+# Quando uma sessão do terminal é encerrada usando a combinação
+# de teclas "ESC+:wq", o diretório onde o usuário se encontra
+# é gravado no arquivo /tmp/gambiarra-wq. Quando encerrada
+# a sessão utilizando o a combinação de teclas  "ESC+:q",
+# a variável "$HOME" é gravada neste arquivo. As instruções
+# abaixo detectam se este arquivo existe e, caso positivo,
+# tentam abrir o terminal no diretório por ele indicado. Caso
+# não seja possível, a sessão será iniciada no diretório padrão.
+if [ -e /tmp/gambiarra-wq ] ;
+then
+    cd "$(cat /tmp/gambiarra-wq)" 2> /dev/null || return ;
+else
+    cd "$HOME" || return ;
+fi
+
+
+
+
+# uma pequena macro para poder fechar o terminal digitando ":q" quando no modo
+# de comando no bash!
+bind -m vi-command -x '":q": echo "" > /tmp/gambiarra-wq && exit'
+
+# :wq -> Também usado para encerrar uma sessão do Shell.
+#       A diferença é que a próxima sessão será aberta usando
+#       a localização (diretório) em que o usuário se encontrava
+#       ao utilizar o comando "wq".
+bind -m vi-command -x '":wq": echo $PWD > /tmp/gambiarra-wq && exit'
+
+# e mais uma para poder limpar a tela com CTRL+L quando no modo "insert"
+# na linha de comando:
+bind -m vi-insert -x '"\C-l": clear'
+
+
+
+
+# Recurso "auto-cd": agiliza deslocamento entre diretórios. Ao digitar
+# o caminho para um diretório "X", o shell  irá interpretar como se você
+# tivesse digitado "cd diretório X". Vale também para ".." (subir para
+# o diretório imediatamente superior) e combinações do mesmo.
+shopt -s autocd
+
+
+
+
+# Quando um comando não reconhecido é inserido, verifica se ele pode ser
+# obtido a partir da instalação de um dos pacotes do Arch Linux. Lembrando
+# que o pacote pkgfile precisa ser intalado com "sudo pacman -S pkgfile"
+# e ter o daemon ativado com "sudo systemctl enable pkgfile-update.timer"
+# para que o código abaixo não resulte em uma mensagem de erro!
+
+#source /usr/share/doc/pkgfile/command-not-found.bash
+
+# ↑ desativei... estava travando por aqui
+
+
+
+# Recurso de auto-completar para o bash: deve sempre vir por último!
+[[ $PS1 && -f /usr/share/bash-completion/bash_completion ]] && \
+    . /usr/share/bash-completion/bash_completion

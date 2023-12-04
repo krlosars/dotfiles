@@ -1,0 +1,38 @@
+#!/bin/env sh
+
+
+
+
+# Script de inicialização do DWM
+# Versão 1.0 - 19 nov 2023
+# Carlos A.R.S.
+# krlosars@gmail.com
+
+
+
+
+# Carrega as configurações definidas no arquivo ~/.Xresources
+xrdb -merge ~/.Xresources ;
+
+# Inicialização automática dos aplicativos incluídos em /etc/xdg/autostart e em ~/.config/autostart
+dex -a ;
+
+# Define o papel de parede
+#feh --no-fehbg --randomize --bg-fill ~/pictures/wallpapers ;
+feh --bg-fill --no-fehbg file:///home/krlao/pictures/wallpapers/second-collection/illustrations/galaxy/dracula-galaxy-282a36.png
+
+# O código abaixo irá enviar data e hora para a barra de status do dwm, com dados atualizados a cada minuto.
+while true ;
+do
+    xsetroot -name "$(date '+%d %b %Y · %R') $(cat .weather.log)" ;
+    sleep 60s ;
+done &
+
+# Inicia o pomodoro
+#pomodoro &
+
+# Inicia o Alacritty
+alacritty &
+
+# Inicia a sessão do DWM
+exec dwm

@@ -1,0 +1,82 @@
+# Certifica que configurações padrão serão incorporadas
+$include /etc/inputrc
+
+# Habilitando o modo VI para a linha de comando do bash
+set editing-mode vi
+
+# Insere o indicador do modo de edição VI no prompt:
+set show-mode-in-prompt on
+
+# Define marcadores para o indicador acima:
+#set vi-ins-mode-string "(ins) "
+#set vi-cmd-mode-string "(cmd) "
+
+# Opção 2: marcadores diferentes para cada
+# um dos modos de edição, e também para
+# o console:
+$if term=linux
+	set vi-ins-mode-string "\1\e[?0c\2(ins) "
+	set vi-cmd-mode-string "\1\e[?8c\2(cmd) "
+$else
+	set vi-ins-mode-string "\1\e[0 q\2󱆃 "
+	set vi-cmd-mode-string "\1\e[4 q\2 "
+$endif
+
+# Movimentação rápida ("pular palavras") com control+setas
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
+
+# Busca rápida por comandos no histórico do bash
+$if mode=vi
+	set keymap vi-command
+		# these are for vi-command mode
+		"\e[A": history-search-backward
+		"\e[B": history-search-forward
+		j: history-search-forward
+		k: history-search-backward
+	set keymap vi-insert
+		# these are for vi-insert mode
+		"\e[A": history-search-backward
+		"\e[B": history-search-forward
+$endif
+
+# Melhorias no recurso de auto-completar do bash
+set show-all-if-ambiguous on
+
+# Mais melhorias para o recurso de auto-completar: cores
+# Color files by types
+# Note that this may cause completion text blink in some terminals (e.g. xterm).
+set colored-stats On
+# Append char to indicate type
+set visible-stats On
+# Mark symlinked directories
+set mark-symlinked-directories On
+# Color the common prefix
+set colored-completion-prefix On
+# Color the common prefix in menu-complete
+set menu-complete-display-prefix On
+
+# Modelo de Macro: imprime a palavra " # macro " e vai para o final-da-linha
+# quando a combinação de teclas ALT + "l" ("ele") é pressionada. Serve como
+# exemplo de como criar macros para inserção de texto.
+# EXEMPLO --> "\ew": "\C-e # macro"
+
+# Macro para limpar a tela com ctrl+l ("ele") no modo de inserção.
+"\C-l": "i"
+
+# Macro para retornar ao diretório do usuário ($HOME)
+"\C-h": "cd ~"
+
+# Macro para corrigir "]<return>"
+"]": ""
+
+# Pequeno ajuste para quando da inserção
+# de texto copiado da área de transferência.
+set enable-bracketed-paste on
+
+# Pequeno ajuste necessário ao terminal "st".
+set enable-keypad off
+
+# Mais dicas de utilização do modo VI de edição estão
+# disponíveis na planilha PDF que pode ser baixada em:
+# https://www.catonmat.net/download/bash-vi-editing-mode-cheat-sheet.pdf

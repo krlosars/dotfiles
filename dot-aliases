@@ -1,0 +1,114 @@
+# "rebash": uma pequena "gambiarra" para recarregar
+# as configurações do .bashrc após modificações que
+# tenham sido realizadas no mesmo.
+alias rebash='source ~/.bashrc'
+
+
+
+
+# Configurando a execução de alguns comandos para melhorar
+# a aparência da saída dos mesmos através de cores e, no caso
+# do comando "ls", de uma melhor organização: diretórios são
+# exibidos primeiro e são adicionados sinais gráficos ao final
+# do nome de cada arquivo ou diretório para sinalizar se são
+# links, diretórios, executáveis, etc.
+alias ls='ls --color=auto --group-directories-first -F -h'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+
+# Pequeno ajuste para a saída do comando "mdcat", que imprime
+# arquivos com formatação "Markdown" ("*.md"). Limita a saída
+# das linhas a um máximo de 80 colunas e utiliza o recurso de
+# paginação ("-p") para permitir a visualização de arquivos
+# longos controlando a rolagem de tela. Para instalar o "mdcat",
+# utilize "sudo pacman -S mdcat"
+#alias mdcat='mdcat -p --columns=80'
+
+
+# O comando "bat" é um substituto, escrito em RUST, para
+# o comando "cat". Oferece uma saída muito melhor, e pode
+# ser instalado usando "sudo pacman -S bat". As linhas
+# abaixo efetuam uma pequena modificação na saída, definindo
+# o tema de cores "base16" e eliminando a saída
+# em "itálico" quando utilizado no console, posto que
+# a fonte utilizada para o mesmo não suporta tal formato.
+# Adicionalmente, um alias ("c") será criado para utilização
+# tanto no console quando em um emulador de terminal como
+# o Alacritty, por exemplo.
+if [ "$TERM" == "linux" ] ;
+then
+    alias bat='bat --theme "base16" --italic-text="never"' ;
+else
+    alias bat='bat --theme "base16" --italic-text="always"' ;
+fi
+
+
+
+
+# Um alias para o comando "rm" por questão de segurança!
+# Nada de comando "rm" a partir da linha de comando: isso
+# costuma dar merda (e das grandes!) quando você já está
+# cansado, bêbado, cheio de sono ou as três coisas juntas!
+# Por isso, toda vez que o usuário tentar usar o comando
+# "rm", será direcionado para um script (bash) que irá
+# informar que esse comando foi bloqueado e orientando-o
+# a utilizar o comando "gio trash", o qual oferece
+# a possibilidade de recuperação de arquivos "apagados"
+# pois, na verdade, os arquivos e diretórios "apagados"
+# são enviados para uma "lixeira" localizada no diretório
+# ~/.local/share/Trash. Para excluir definitivamente todo
+# o conteúdo da lixeira, pode ser utilizado o comando
+# "sudo rm -rf ~/.local/share/Trash/*" ou o comando
+# ":empty" na versão modificada do RANGER que eu utilizo.
+#alias rm="rm_eh_o_kralho"
+
+# Para facilitar a utilização do comando "gio trash", criei
+# um alias para mesmo.
+#alias gtr="gio trash"
+
+
+
+
+# Aliases pessoais -> em ordem (mais ou menos!) alfabética!
+
+
+
+
+# "b" para o comando "bat" citado acima...
+alias b='bat'
+
+# "hx" ao invés de "helix". Até porque o nome do executável é esse!
+alias hx="helix"
+
+# "v" para o "neovim"
+alias v="nvim"
+
+
+# l, ll, la e lla -> comando "lsd" (substituto em Rust para "ls").
+# O comando "lsd" pode ser instalado usando "sudo pacman -S lds".
+alias lla='lsd --hyperlink auto --icon-theme fancy --color=auto --icon=auto --group-dirs=first -l -a -F'
+alias ll='lsd --hyperlink auto --icon-theme fancy --color=auto --icon=auto --group-dirs=first -l -F'
+alias la='lsd --hyperlink auto --icon-theme fancy --color=auto --icon=auto --group-dirs=first -a -F'
+alias l='lsd --hyperlink auto --icon-theme fancy --color=auto --icon=auto --group-dirs=first -F'
+
+
+
+
+# Usando "t" como alias para o tradutor. Para instalar, utilize
+# "sudo pacman -S translate-shell".
+alias t="trans en:pt-br"
+
+
+
+
+# Define a cor do backgroun do visualizador de imagens imv
+# para utilizar o verde padrão do tema solarized dark
+# Para instalar: sudo pacman -S imv
+#alias imv='imv -b#002b36'
+
+
+# Usando "x" como alias para "chmod +x"
+alias x="chmod +x"

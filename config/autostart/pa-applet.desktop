@@ -1,0 +1,5 @@
+[Desktop Entry]
+Exec=/usr/bin/pa-applet
+Name=pa-applet
+Comment=PulseAudio control applet
+Type=Application
