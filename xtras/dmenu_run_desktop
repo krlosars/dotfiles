@@ -1,0 +1,39 @@
+#!/bin/env bash
+
+# Pega todas as entradas de desktop para aplicativos
+desktopEntries=$(ls -1 /usr/share/applications/*.desktop)
+
+# Inicializa a variável que irá montar o dmenu
+dmenuString=''
+
+# Inicia loop para preencher a string definida acima
+for desktopEntryFile in $(echo $desktopEntries);
+do
+    desktopEntryName=$(grep ^Name= $desktopEntryFile | head -1 | cut -d= -f2)
+    dmenuString="${dmenuString}${desktopEntryName}#${desktopEntryFile}\n"
+done
+
+# Usa dmenu com o separador # para apresentar as opções
+dmenuSelectedOption=$(echo -e "$dmenuString" | dmenu "$@" -i -d "#")
+
+# Se o usuário pressionou ESC ou cancelou, sai com status de erro
+if [ -z "$dmenuSelectedOption" ]; then
+    exit 1
+fi
+
+# Se a opção selecionada pelo usuário não corresponde a um arquivo
+# do tipo ".desktop" existente em /usr/share/applications, encerra
+# com status de erro. Isto é necessário para o caso do usuário
+# digitar algo sem correspondência com uma das opções do dmenu
+# e pressionar ENTER
+if ! [ -f "$dmenuSelectedOption" ];
+then
+    exit 1
+fi
+
+# Executa o aplicativo de acordo com seu arquivo ".destop". Note
+# que o parâmetro --term=$TERMINAL é necessário para que aplicativos
+# que devem ser inicializados via emulador de terminal sejam abertos
+# da forma correta. A variável de sistema $TERMINAL deve conter
+# o nome do emulador de terminal. No meu caso, TERMINAL="alacritty"
+dex --term="$TERMINAL" "$dmenuSelectedOption"
